@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  node:
+    image: node:16
+    container_name: performance_testing_node
+    volumes:
+      - ./:/app
+    ports:
+      - 3000:3000
+    working_dir: /app
+    command: npm run dev
+  locust:
+    image: locustio/locust:2.9.0
+    container_name: performance_testing_locust
+    volumes:
+      - ./:/mnt/locust
+    ports:
+     - 8089:8089
+    depends_on:
+      - node
+    command: -f /mnt/locust/locustfile.py --host http://performance_testing_node:3000
+networks:
+  default:
+    external:
+      name: performance_testing_network
